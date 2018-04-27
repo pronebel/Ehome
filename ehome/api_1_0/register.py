@@ -102,6 +102,7 @@ def send_sms_code(mobile):
         return jsonify(errno=RET.DATAERR, errmsg='图片验证码错误')
     # 生成短信随机码，使用随机数模块，生成六位数
     sms_code = '%06d'% random.randint(1,999999)
+    print sms_code
     # 保存短信验证码
     try:
         redis_store.setex('SMSCode_' +mobile, constants.SMS_CODE_REDIS_EXPIRES, sms_code)
@@ -121,21 +122,22 @@ def send_sms_code(mobile):
     #         return jsonify(errno=RET.DATAEXIST, errmsg='手机号已注册')
 
     # 发送短信，调用云通讯接口
-    try:
-        # 实例化对象
-        ccp = sms.CCP()
-        # 调用云通讯发送短信方法
-        result = ccp.send_template_sms(mobile,[sms_code,constants.SMS_CODE_REDIS_EXPIRES/60],1)
-    except Exception as e:
-        current_app.logger.error(e)
-        return jsonify(errno=RET.THIRDERR, errmsg='发送短信异常')
+    # try:
+    #     # 实例化对象
+    #     ccp = sms.CCP()
+    #     # 调用云通讯发送短信方法
+    #     result = ccp.send_template_sms(mobile,[sms_code,constants.SMS_CODE_REDIS_EXPIRES/60],1)
+    # except Exception as e:
+    #     current_app.logger.error(e)
+    #     return jsonify(errno=RET.THIRDERR, errmsg='发送短信异常')
     # 判断发送结果
     # if result ==0:
     # 表达式判断，变量写在后面
-    if 0 == result:
-        return jsonify(errno=RET.OK, errmsg= '发送成功')
-    else:
-        return jsonify(errno=RET.THIRDERR, errmsg='发送失败')
+    return jsonify(errno=RET.OK, errmsg='发送成功')
+    # if 0 == result:
+    #     return jsonify(errno=RET.OK, errmsg= '发送成功')
+    # else:
+    #     return jsonify(errno=RET.THIRDERR, errmsg='发送失败')
 
 
 # 注册
@@ -211,25 +213,25 @@ def register():
         current_app.logger.error(e)
 
     # 保存用户信息， name/mobile/password
-        user = User(name=mobile, mobile=mobile)
-        # 调用模型类中的加密方法
-        user.password = password
-        # 提交数据到数据库中
-        try:
-            db.seesion.add(user)
-            db.session.commit()
-        except Exception as e:
-            current_app.logger.error(e)
-            # 写入数据如果发生错误，需要进行回滚
-            db.session.rollback()
-            return jsonify(errno=RET.DBERR, errmsg='保存用户信息异常')
-        # 缓存用户信息
-        session['user_id'] = user.id
-        session['name'] = mobile
-        session['mobile'] = mobile
+    user = User(name=mobile, mobile=mobile)
+    # 调用模型类中的加密方法
+    user.password = password
+    # 提交数据到数据库中
+    try:
+        db.session.add(user)
+        db.session.commit()
+    except Exception as e:
+        current_app.logger.error(e)
+        # 写入数据如果发生错误，需要进行回滚
+        db.session.rollback()
+        return jsonify(errno=RET.DBERR, errmsg='保存用户信息异常')
+    # 缓存用户信息
+    session['user_id'] = user.id
+    session['name'] = mobile
+    session['mobile'] = mobile
 
-        # 返回结果
-        return jsonify(errno=RET.OK, errmsg='OK', data=user.to_dict())
+    # 返回结果
+    return jsonify(errno=RET.OK, errmsg='OK', data=user.to_dict())
 
 
 

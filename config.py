@@ -9,11 +9,11 @@ class Config:
     SECRET_KEY = "TQ6uZxn+SLqiLgVimX838/VplIsLbEP5jV7vvZ+Ohqw="
 
     # flask-sqlalchemy使用的参数
-    SQLALCHEMY_DATABASE_URI = "mysql://root:mysql@127.0.0.1/ehome"  # 数据库
+    SQLALCHEMY_DATABASE_URI = "mysql://root:123456@127.0.0.1/ehome"  # 数据库
     SQLALCHEMY_TRACK_MODIFICATIONS = True  # 追踪数据库的修改行为，如果不设置会报警告，不影响代码的执行
 
     # 创建redis实例用到的参数
-    REDIS_HOST = "127.0.0.1"
+    REDIS_HOST = "10.100.19.101"
     REDIS_PORT = 6379
 
     # flask-session使用的参数

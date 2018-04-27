@@ -11,7 +11,7 @@ Desktop.ini
 *.egg-info
 dist
 build
-
+/venv
 # My configurations:
 .idea
 *.log
